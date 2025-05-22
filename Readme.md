@@ -1,6 +1,6 @@
 # URL Shortener Kubernetes Project
 
-A fully Dockerized, Kubernetes-deployed, backend-only URL shortener built using **FastAPI**, running with **Ingress**, **self-signed TLS**, and **Cert-Manager**. Great for DevOps resume projects and local development.
+A fully Dockerized, Kubernetes-deployed, backend-only URL shortener built using **FastAPI**, running with **Ingress**, **self-signed TLS**, and **Cert-Manager**.
 
 ---
 
