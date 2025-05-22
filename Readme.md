@@ -124,7 +124,7 @@ curl http://short.local/<short-code>
 
 ---
 
-## 🔐 Access with HTTPS
+## Access with HTTPS
 
 Navigate to:
 
@@ -145,7 +145,7 @@ minikube stop
 
 ---
 
-## 📁 Suggested Folder Structure
+## Folder Structure
 
 ```bash
 .
