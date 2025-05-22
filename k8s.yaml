@@ -1,0 +1,100 @@
+---
+# ============================
+# 1. Kubernetes Deployment
+# ============================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: url-shortener
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: url-shortener
+  template:
+    metadata:
+      labels:
+        app: url-shortener
+    spec:
+      containers:
+      - name: url-shortener
+        image: url-shortener:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+
+---
+# ============================
+# 2. Kubernetes Service
+# ============================
+apiVersion: v1
+kind: Service
+metadata:
+  name: url-shortener-service
+spec:
+  selector:
+    app: url-shortener
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP
+
+---
+# ============================
+# 3. Ingress
+# ============================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: url-shortener-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+  - host: short.local
+    http:
+      paths:
+      - path: /?(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: url-shortener-service
+            port:
+              number: 80
+
+---
+# ============================
+# 4. Self-signed ClusterIssuer
+# ============================
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-cluster-issuer
+spec:
+  selfSigned: {}
+
+---
+# ============================
+# 5. TLS Certificate for short.local
+# ============================
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: short-local-cert
+spec:
+  secretName: short-local-tls
+  duration: 8760h
+  renewBefore: 240h
+  subject:
+    organizations:
+    - Shortener Local Dev
+  commonName: short.local
+  dnsNames:
+  - short.local
+  issuerRef:
+    name: selfsigned-cluster-issuer
+    kind: ClusterIssuer
+  secretTemplate:
+    labels:
+      purpose: dev-ssl
